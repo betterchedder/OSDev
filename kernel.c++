@@ -154,11 +154,11 @@ void kernel_main() {
 
 	char c;
 	init_pics(0x20, 0x28);
-	c = inb(0x60);
+	c = (char) (inb(0x60)+ '0');
 	do {
 		if(inb(0x60)!=c) //PORT FROM WHICH WE READ
 		{
-    			c = (char)inb(0x60);
+    			c = (char)(inb(0x60)+'0');
     			if(c>0) {
 				terminal_putchar(c); //print on screen
 		        }
