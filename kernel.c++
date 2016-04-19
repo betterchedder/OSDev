@@ -191,7 +191,7 @@ char getScancode() {
 }
 
 char getchar() {
-	return scancode[getScancode()+1];
+	return scancode[getScancode()+0];
 }
  
 #if defined(__cplusplus)
@@ -212,6 +212,7 @@ void kernel_main() {
 	do {
 		c=getchar();
 		terminal_putchar(c);
+		for(int wait=0;wait<100000;wait++){}
 	}
 	while(c!='\n'); // 1= ESCAPE
 	terminal_writestring("you've pressed enter, NOOOOOOOOOOO!!!!!!\n");
