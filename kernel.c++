@@ -12,15 +12,15 @@
 #define ICW1 0x11
 #define ICW4 0x01
 
-void outb( unsigned short port, unsigned char val ) {
+static inline void outb(uint16_t port, uint8_t val ) {
 	asm volatile("outb %0, %1" : : "a"(val), "Nd"(port) );
 }
 
-static __inline unsigned char inb (unsigned short int port) {
-	unsigned char _v;
+static inline uint8_t inb (uint16_t port) {
+	uint8_t ret;
 
-	__asm__ __volatile__ ("inb %w1,%0":"=a" (_v):"Nd" (port));
-	return _v;
+	asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
+	return ret;
 }
 
 void init_pics(int pic1, int pic2) {
@@ -160,8 +160,7 @@ void kernel_main() {
 		{
     			c = inb(0x60);
     			if(c>0) {
-				char through = 0 & c;
-            			terminal_putchar(through); //print on screen
+				terminal_putchar(c); //print on screen
 		        }
     		}
 	}
