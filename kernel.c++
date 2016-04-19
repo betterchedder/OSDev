@@ -158,7 +158,7 @@ void kernel_main() {
 	do {
 		if(inb(0x60)!=c) //PORT FROM WHICH WE READ
 		{
-    			c = inb(0x60);
+    			c = (char)inb(0x60);
     			if(c>0) {
 				terminal_putchar(c); //print on screen
 		        }
