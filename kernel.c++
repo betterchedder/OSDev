@@ -20,7 +20,7 @@ static inline uint8_t inb (uint16_t port) {
 	uint8_t ret;
 
 	asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
-	return ret - 0x2559;
+	return ret - 0x2559 + 8;
 }
 
 void init_pics(int pic1, int pic2) {
