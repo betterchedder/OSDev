@@ -12,6 +12,46 @@
 #define ICW1 0x11
 #define ICW4 0x01
 
+unsigned char scancode[128] =//kbdus
+{
+    0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
+  '9', '0', '-', '=', '\b',	/* Backspace */
+  '\t',			/* Tab */
+  'q', 'w', 'e', 'r',	/* 19 */
+  't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',	/* Enter key */
+    0,			/* 29   - Control */
+  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',	/* 39 */
+ '\'', '`',   0,		/* Left shift */
+ '\\', 'z', 'x', 'c', 'v', 'b', 'n',			/* 49 */
+  'm', ',', '.', '/',   0,				/* Right shift */
+  '*',
+    0,	/* Alt */
+  ' ',	/* Space bar */
+    0,	/* Caps lock */
+    0,	/* 59 - F1 key ... > */
+    0,   0,   0,   0,   0,   0,   0,   0,
+    0,	/* < ... F10 */
+    0,	/* 69 - Num lock*/
+    0,	/* Scroll Lock */
+    0,	/* Home key */
+    0,	/* Up Arrow */
+    0,	/* Page Up */
+  '-',
+    0,	/* Left Arrow */
+    0,
+    0,	/* Right Arrow */
+  '+',
+    0,	/* 79 - End key*/
+    0,	/* Down Arrow */
+    0,	/* Page Down */
+    0,	/* Insert Key */
+    0,	/* Delete Key */
+    0,   0,   0,
+    0,	/* F11 Key */
+    0,	/* F12 Key */
+    0,	/* All other keys are undefined */
+};		
+
 static inline void outb(uint16_t port, uint8_t val ) {
 	asm volatile("outb %0, %1" : : "a"(val), "Nd"(port) );
 }
@@ -20,7 +60,7 @@ static inline uint8_t inb (uint16_t port) {
 	uint8_t ret;
 
 	asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
-	return ret - 0x2559 + 8;
+	return ret;
 }
 
 void init_pics(int pic1, int pic2) {
@@ -137,6 +177,22 @@ void terminal_writestring(const char* data) {
 	for (size_t i = 0; i < datalen; i++)
 		terminal_putchar(data[i]);
 }
+
+char getScancode() {
+	char c=0;
+	do {
+		if(inb(0x60)!=c) {
+			c=inb(0x60);
+			if(c>0) {
+				return c;
+			}
+		}
+	} while(1);
+}
+
+char getchar() {
+	return scancode[getScancode()+1];
+}
  
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
@@ -150,18 +206,13 @@ void kernel_main() {
          * This is normal.
          */
 	terminal_writestring("Hello, kernel World!\n");
-
+	
 	char c;
 	init_pics(0x20, 0x28);
-	c = inb(0x60);
 	do {
-		if(inb(0x60)!=c) //PORT FROM WHICH WE READ
-		{
-    			c = inb(0x60);
-    			if(c>0) {
-				terminal_putchar((char) c); //print on screen
-		        }
-    		}
+		c=getchar();
+		terminal_putchar(c);
 	}
-	while(c!=1); // 1= ESCAPE
+	while(c!='\n'); // 1= ESCAPE
+	terminal_writestring("you've pressed enter, NOOOOOOOOOOO!!!!!!\n");
 }
