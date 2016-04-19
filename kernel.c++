@@ -160,7 +160,8 @@ void kernel_main() {
 		{
     			c = inb(0x60);
     			if(c>0) {
-            			terminal_putchar(c); //print on screen
+				char through = 0 & c;
+            			terminal_putchar(through); //print on screen
 		        }
     		}
 	}
