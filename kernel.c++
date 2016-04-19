@@ -122,8 +122,7 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 }
  
 void terminal_putchar(char c) {
-	int transform=c;
-	terminal_putentryat(transform, terminal_color, terminal_column, terminal_row);
+	terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
 	
 	if (++terminal_column == VGA_WIDTH) {
 		terminal_column = 0;
@@ -154,13 +153,13 @@ void kernel_main() {
 
 	char c;
 	init_pics(0x20, 0x28);
-	c = (char) (inb(0x60)+ '0');
+	c = inb(0x60);
 	do {
 		if(inb(0x60)!=c) //PORT FROM WHICH WE READ
 		{
-    			c = (char)(inb(0x60)+'0');
+    			c = inb(0x60);
     			if(c>0) {
-				terminal_putchar(c); //print on screen
+				terminal_putchar((char) c); //print on screen
 		        }
     		}
 	}
